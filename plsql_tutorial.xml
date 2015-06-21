@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<!DOCTYPE dbmonster-schema PUBLIC "-//kernelpanic.pl//DBMonster Database Schema DTD 1.1//EN" "http://dbmonster.kernelpanic.pl/dtd/dbmonster-schema-1.1.dtd">
+<dbmonster-schema>
+  <name>PLSQL_TUTORIAL</name>
+  <table name="USUARIOS" rows="100">
+    <key databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.MaxKeyGenerator">
+        <property name="columnName" value="ID"/>
+      </generator>
+    </key>
+    <column name="NOME" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.DictionaryGenerator">
+        <property name="dictFile" value="dict/dict-names-pl.gz"/>
+        <property name="unique" value="true"/>
+      </generator>
+    </column>
+    <column name="LIGACOES" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.NumberGenerator">
+        <property name="maxValue" value="127"/>
+        <property name="minValue" value="0"/>
+        <property name="nulls" value="0"/>
+        <property name="returnedType" value="integer"/>
+        <property name="scale" value="0"/>
+      </generator>
+    </column>
+    <!--
+    <column name="ULTIMA_LIGACAO" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.ForeignKeyGenerator">
+        <property name="columnName" value="ID"/>
+        <property name="fastMode" value="false"/>
+        <property name="nulls" value="0"/>
+        <property name="tableName" value="LIGACOES"/>
+      </generator>
+    </column>
+    -->
+    <column name="VENDAS" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.NumberGenerator">
+        <property name="maxValue" value="127"/>
+        <property name="minValue" value="0"/>
+        <property name="nulls" value="0"/>
+        <property name="returnedType" value="integer"/>
+        <property name="scale" value="0"/>
+      </generator>
+    </column>
+    <!--
+    <column name="ULTIMA_VENDA" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.ForeignKeyGenerator">
+        <property name="columnName" value="ID"/>
+        <property name="fastMode" value="false"/>
+        <property name="nulls" value="0"/>
+        <property name="tableName" value="VENDAS"/>
+      </generator>
+    </column>
+    -->
+  </table>
+  <table name="VENDAS" rows="1000">
+    <key databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.MaxKeyGenerator">
+        <property name="columnName" value="ID"/>
+      </generator>
+    </key>
+    <column name="DATA" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.DateTimeGenerator">
+        <property name="endDate" value="2015-06-20 21:59:59.0 -0300"/>
+        <property name="nulls" value="0"/>
+        <property name="returnedType" value="timestamp"/>
+        <property name="startDate" value="2015-01-02 08:00:00.0 -0300"/>
+      </generator>
+    </column>
+    <column name="STATUS" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.NumberGenerator">
+        <property name="maxValue" value="5"/>
+        <property name="minValue" value="1"/>
+        <property name="nulls" value="0"/>
+        <property name="returnedType" value="integer"/>
+        <property name="scale" value="0"/>
+      </generator>
+    </column>
+    <column name="VALOR" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.NumberGenerator">
+        <property name="maxValue" value="127"/>
+        <property name="minValue" value="0"/>
+        <property name="nulls" value="10"/>
+        <property name="returnedType" value="integer"/>
+        <property name="scale" value="0"/>
+      </generator>
+    </column>
+    <column name="VENDEDOR_ID" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.ForeignKeyGenerator">
+        <property name="columnName" value="ID"/>
+        <property name="fastMode" value="false"/>
+        <property name="nulls" value="0"/>
+        <property name="tableName" value="USUARIOS"/>
+      </generator>
+    </column>
+  </table>
+  <table name="LIGACOES" rows="10000">
+    <key databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.MaxKeyGenerator">
+        <property name="columnName" value="ID"/>
+      </generator>
+    </key>
+    <column name="DATA" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.DateTimeGenerator">
+        <property name="endDate" value="2015-06-20 21:59:59.0 -0300"/>
+        <property name="nulls" value="0"/>
+        <property name="returnedType" value="timestamp"/>
+        <property name="startDate" value="2015-01-02 08:00:00.0 -0300"/>
+      </generator>
+    </column>
+    <column name="STATUS" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.NumberGenerator">
+        <property name="maxValue" value="5"/>
+        <property name="minValue" value="1"/>
+        <property name="nulls" value="0"/>
+        <property name="returnedType" value="integer"/>
+        <property name="scale" value="0"/>
+      </generator>
+    </column>
+    <column name="DURACAO" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.NumberGenerator">
+        <property name="maxValue" value="1800"/>
+        <property name="minValue" value="5"/>
+        <property name="nulls" value="0"/>
+        <property name="returnedType" value="integer"/>
+        <property name="scale" value="0"/>
+      </generator>
+    </column>
+    <column name="ATENDENTE_ID" databaseDefault="false">
+      <generator type="pl.kernelpanic.dbmonster.generator.ForeignKeyGenerator">
+        <property name="columnName" value="ID"/>
+        <property name="fastMode" value="false"/>
+        <property name="nulls" value="0"/>
+        <property name="tableName" value="USUARIOS"/>
+      </generator>
+    </column>
+  </table>
+</dbmonster-schema>
