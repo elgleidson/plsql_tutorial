@@ -45,8 +45,11 @@ create or replace package body plsql_tutorial.usuarios_stats as
         where id = p_usuario_id;
       end if;
     end if;
-  exception when no_data_found then
-    null;
+  exception 
+    when no_data_found then
+      null;
+    when too_many_rows then
+      null;
   end;
   
   
