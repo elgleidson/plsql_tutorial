@@ -2,10 +2,10 @@
 
 create or replace package plsql_tutorial.usuarios_stats as
   
-  procedure audit_vendas(p_usuario_id in number);
-  procedure recalc_vendas(p_usuario_id in number);
-  procedure audit_ligacoes(p_usuario_id in number);
-  procedure recalc_ligacoes(p_usuario_id in number);
+  procedure audit_vendas(p_usuario_id in number := null);
+  procedure recalc_vendas(p_usuario_id in number := null);
+  procedure audit_ligacoes(p_usuario_id in number := null);
+  procedure recalc_ligacoes(p_usuario_id in number := null);
   
 end;
 /
@@ -61,32 +61,60 @@ create or replace package body plsql_tutorial.usuarios_stats as
   end;
   
   
-  procedure audit_vendas(p_usuario_id in number)
+  procedure audit_vendas(p_usuario_id in number := null)
   is
   begin
-    trata_divergentes('vendas', 'vendedor_id', 'vendas', 'ultima_venda', p_usuario_id, 'audit_vendas', false);
+    if p_usuario_id is not null then
+      trata_divergentes('vendas', 'vendedor_id', 'vendas', 'ultima_venda', p_usuario_id, 'audit_vendas', false);
+    else
+      for vendedor in (select id from usuarios) 
+      loop
+        audit_vendas(p_usuario_id => vendedor.id);
+      end loop;
+    end if;
   end;
   
   
-  procedure recalc_vendas(p_usuario_id in number)
+  procedure recalc_vendas(p_usuario_id in number := null)
   is
   begin
-    trata_divergentes('vendas', 'vendedor_id', 'vendas', 'ultima_venda', p_usuario_id, 'recalc_vendas', true);
+    if p_usuario_id is not null then
+      trata_divergentes('vendas', 'vendedor_id', 'vendas', 'ultima_venda', p_usuario_id, 'recalc_vendas', true);
+    else
+      for vendedor in (select id from usuarios) 
+      loop
+        recalc_vendas(p_usuario_id => vendedor.id);
+      end loop;
+    end if;
   end;
   
   
-  procedure audit_ligacoes(p_usuario_id in number)
+  procedure audit_ligacoes(p_usuario_id in number := null)
   is
   begin
-    trata_divergentes('ligacoes', 'atendente_id', 'ligacoes', 'ultima_ligacao', p_usuario_id, 'audit_ligacoes', false);
+    if p_usuario_id is not null then
+      trata_divergentes('ligacoes', 'atendente_id', 'ligacoes', 'ultima_ligacao', p_usuario_id, 'audit_ligacoes', false);
+    else
+      for atendente in (select id from usuarios) 
+      loop
+        audit_ligacoes(p_usuario_id => atendente.id);
+      end loop;
+    end if;
   end;
   
   
-  procedure recalc_ligacoes(p_usuario_id in number)
+  procedure recalc_ligacoes(p_usuario_id in number := null)
   is
   begin
-    trata_divergentes('ligacoes', 'atendente_id', 'ligacoes', 'ultima_ligacao', p_usuario_id, 'recalc_ligacoes', true);
+    if p_usuario_id is not null then
+      trata_divergentes('ligacoes', 'atendente_id', 'ligacoes', 'ultima_ligacao', p_usuario_id, 'recalc_ligacoes', true);
+    else
+      for atendente in (select id from usuarios) 
+      loop
+        recalc_ligacoes(p_usuario_id => atendente.id);
+      end loop;
+    end if;
   end;
-  
+    
 end;
 /
