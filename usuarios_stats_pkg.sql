@@ -1,6 +1,13 @@
 --drop package plsql_tutorial.usuario_stats;
 
 create or replace package plsql_tutorial.usuarios_stats as
+
+  type usuario_stat_t is record (
+    ultimo_id number,
+    quantidade number
+  );
+  
+  function usuario_stat_equals(este in usuario_stat_t, aquele in usuario_stat_t) return boolean; 
   
   procedure audit_vendas(p_usuario_id in number := null);
   procedure recalc_vendas(p_usuario_id in number := null);
@@ -12,15 +19,23 @@ end;
 
 create or replace package body plsql_tutorial.usuarios_stats as
 
-  function get_calc(p_tabela in varchar, p_coluna in varchar, p_usuario_id in number, o_ultimo_id out number) return number
+  function usuario_stat_equals(este in usuario_stat_t, aquele in usuario_stat_t) return boolean
   is
-    v_valor number := 0;
+  begin
+    return (((este.quantidade = aquele.quantidade) or (este.quantidade is null and aquele.quantidade is null)) 
+        and ((este.ultimo_id = aquele.ultimo_id) or (este.ultimo_id is null and aquele.ultimo_id is null)));
+  end;
+  
+
+  function get_calc(p_tabela in varchar, p_coluna in varchar, p_usuario_id in number) return usuario_stat_t
+  is
+    v_stat usuario_stat_t;
   begin
     execute immediate 'select count(id), max(id) from '||p_tabela||' where '||p_coluna||' = :id'
-    into v_valor, o_ultimo_id
+    into v_stat.quantidade, v_stat.ultimo_id
     using p_usuario_id;
     
-    return v_valor;
+    return v_stat;
   end;
   
   procedure trata_divergentes(
@@ -33,24 +48,22 @@ create or replace package body plsql_tutorial.usuarios_stats as
     p_update      in boolean
   )
   is
-    v_valor_atual number := 0;
-    v_valor_calc  number := 0;
-    v_ultimo_id_atual number;
-    v_ultimo_id_calc  number;
+    v_stat_atual usuario_stat_t;
+    v_stat_calc  usuario_stat_t;
   begin
     execute immediate 'select '||p_coluna_qt||', '||p_coluna_id||' from usuarios where id = :id'
-    into v_valor_atual, v_ultimo_id_atual
+    into v_stat_atual.quantidade, v_stat_atual.ultimo_id
     using p_usuario_id;
     
-    v_valor_calc := get_calc(p_tabela, p_coluna, p_usuario_id, v_ultimo_id_calc);
+    v_stat_calc := get_calc(p_tabela, p_coluna, p_usuario_id);
     
-    if (v_valor_atual <> v_valor_calc or nvl(v_ultimo_id_atual, -1) <> nvl(v_ultimo_id_calc, -2)) then
+    if not usuario_stat_equals(v_stat_atual, v_stat_calc) then
       insert into usuarios_stats_logs (usuario_id, log_name, campo, valor_atual, ultimo_id_atual, valor_calc, ultimo_id_calc)
-      values (p_usuario_id, p_log_name, p_tabela, v_valor_atual, v_ultimo_id_atual, v_valor_calc, v_ultimo_id_calc);
+      values (p_usuario_id, p_log_name, p_tabela, v_stat_atual.quantidade, v_stat_atual.ultimo_id, v_stat_calc.quantidade, v_stat_calc.ultimo_id);
       
       if p_update then
         execute immediate 'update usuarios set '||p_coluna_qt||' = :valor_calc, '||p_coluna_id||' = :ultimo_id_calc where id = :id'
-        using v_valor_calc, v_ultimo_id_calc, p_usuario_id;
+        using v_stat_calc.quantidade, v_stat_calc.ultimo_id, p_usuario_id;
       end if;
     end if;
   exception 
